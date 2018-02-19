@@ -40,6 +40,9 @@ public class Consulta {
 	public void setHorario(long horario) {
 		this.horario = new Time(horario);
 	}
+	public void setHorario(Time horario) {
+		this.horario = horario;
+	}
 	
 	@Override
 	public String toString() {
