@@ -32,6 +32,8 @@ public class ControllerServlet extends HttpServlet {
 				uriPieces.add(piece);				
 		} 
 		
+		// uriPieces[0] = 'clinica'
+		// uriPieces[1] = 'nome_dispatcher'
 		String logica = "";
 		if(uriPieces.size() > 1)
 			logica = uriPieces.get(1);
@@ -42,8 +44,9 @@ public class ControllerServlet extends HttpServlet {
 			Dispatcher dispatcherObject = (Dispatcher) dispatcherClass.newInstance();
 			stringDispatcher = dispatcherObject.dispatch(request, response);
 		} catch (ClassNotFoundException notFound) {
-			// SE NÃO ENCONTRAR A CLASSE EXIBA index.jsp
+			// SE NÃO ENCONTRAR A CLASSE, SIMPLESMENTE EXIBA index.jsp
 			//throw new RuntimeException(notFound);
+			log("ClassNotFoundException log: " + notFound.getMessage());
 		} catch (IllegalAccessException illegaAccess) {
 			throw new RuntimeException(illegaAccess);
 		} catch (InstantiationException instatiation) {

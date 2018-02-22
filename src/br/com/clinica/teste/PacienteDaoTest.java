@@ -104,7 +104,11 @@ public class PacienteDaoTest {
 		assertEquals(pacienteDb.getIdPaciente(), pacienteTest1.getIdPaciente());
 		assertEquals(pacienteDb.getCpf(), pacienteTest1.getCpf());
 		assertEquals(pacienteDb.getSexo(), pacienteTest1.getSexo());
-		//assertEquals(pacienteDb.getDataNascimento(), pacienteTest1.getDataNascimento());
+		
+		String pacienteDbNasc = ConversorData.calendarToString(pacienteDb.getDataNascimento(), "yyyy/MM/dd");
+		String pacienteTestNasc = ConversorData.calendarToString(pacienteTest1.getDataNascimento(), "yyyy/MM/dd");
+		
+		assertEquals(pacienteDbNasc, pacienteTestNasc);
 		assertNotEquals(pacienteDb.getNome(), pacienteTest1.getNome());
 	}
 	
