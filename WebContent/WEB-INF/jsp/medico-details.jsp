@@ -23,8 +23,8 @@
 		<label for="especialidade">Especialidade: </label>
 		<input type="text" name="especialidade" id="especialidade" value="${medico.especialidade}" /> <br />
 		
-		<input type="submit" name="_method" value="PUT" />
 		<input type="submit" name="_method" value="DELETE" />
+		<input type="submit" name="_method" value="PUT" />
 		
 		<c:if test="${not empty mensagem}">
 			<p>${mensagem}</p>

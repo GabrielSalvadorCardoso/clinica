@@ -21,7 +21,12 @@ public class ControllerServlet extends HttpServlet {
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		String requestUri = request.getRequestURI();
 		String requestMethod = request.getMethod();
-		System.out.println("Request URI: " + requestUri + " " + requestMethod);
+		String requestMethodAlt = request.getParameter("_method");
+		
+		if(requestMethodAlt != null)
+			System.out.println("Request URI: " + requestUri + " " + requestMethodAlt);
+		else
+			System.out.println("Request URI: " + requestUri + " " + requestMethod);
 		
 		// por padrão, as requisições serão derecionadas para o index.jsp
 		String stringDispatcher = "WEB-INF/jsp/index.jsp";

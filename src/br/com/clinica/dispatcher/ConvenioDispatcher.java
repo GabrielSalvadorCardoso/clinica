@@ -21,12 +21,20 @@ public class ConvenioDispatcher implements Dispatcher{
 		String requestUri = request.getRequestURI();
 		String requestMethod = request.getMethod();
 		String idConvenio = request.getParameter("idConvenio");
+		String requestMethodAlt = request.getParameter("_method");
 		
-		if(requestMethod.equals("GET")) {
+		if(requestMethodAlt != null) {
+			if(requestMethodAlt.equals("PUT"))
+				return this.put(request, response);
+			else
+				return this.delete(request, response);
+		} else if(requestMethod.equals("GET")) {
 			if(idConvenio != null)
 				return this.get(request, response, Long.parseLong(idConvenio));
 			else
 				return this.get(request, response);
+		} else if(requestMethod.equals("POST")) {
+			return this.post(request, response);
 		}
 		
 		return "WEB-INF/jsp/index.jsp";
@@ -41,26 +49,50 @@ public class ConvenioDispatcher implements Dispatcher{
 
 	@Override
 	public String get(HttpServletRequest request, HttpServletResponse response, long id) {
-		// TODO Auto-generated method stub
-		return null;
+		Convenio convenio = this.dao.pesquisa(id);
+		request.setAttribute("convenio", convenio);
+		return "WEB-INF/jsp/convenio-details.jsp";
 	}
 
 	@Override
 	public String post(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		return null;
+		Convenio convenio = new Convenio();
+		convenio.setCodigo(request.getParameter("codigo"));
+		convenio.setNome(request.getParameter("nome"));
+		convenio.setConcedente(request.getParameter("concedente"));
+		
+		this.dao.adiciona(convenio);
+		return "ConvenioDispatcher";
 	}
 
 	@Override
 	public String put(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		return null;
+		Convenio convenio = new Convenio();
+		convenio.setIdConvenio(Long.parseLong(request.getParameter("idConvenio")));
+		convenio.setCodigo(request.getParameter("codigo"));
+		convenio.setNome(request.getParameter("nome"));
+		convenio.setConcedente(request.getParameter("concedente"));
+		
+		this.dao.altera(convenio);
+		
+		request.setAttribute("convenio", convenio);
+		request.setAttribute("mensagem", "Convênio alterado com sucesso!");
+		
+		return "WEB-INF/jsp/convenio-details.jsp";
 	}
 
 	@Override
 	public String delete(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		return null;
+		Convenio convenio = new Convenio();
+		convenio.setIdConvenio(Long.parseLong(request.getParameter("idConvenio")));
+		convenio.setCodigo(request.getParameter("codigo"));
+		convenio.setNome(request.getParameter("nome"));
+		convenio.setConcedente(request.getParameter("concedente"));
+		
+		this.dao.remove(convenio);
+		
+		// redireciona para a lista de convenios
+		return this.get(request, response);
 	}
 
 }

@@ -12,7 +12,7 @@
 	
 	<!-- <a href="?logica=MedicoLogica">Medicos</a> <br />-->
 	<a href="MedicoDispatcher">Medicos</a> <br />
-	<a href="#">Pacientes</a> <br />
+	<a href="PacienteDispatcher">Pacientes</a> <br />
 	<a href="ConvenioDispatcher">Convenios</a> <br />
 	<a href="#">Consultas</a> <br />
 	
