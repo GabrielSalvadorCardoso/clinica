@@ -39,13 +39,13 @@
 	
 	<form action="MedicoDispatcher" method="POST">
 		<label for="crm">CRM: </label>
-		<input type="text" name="crm" id="crm" /> <br />
+		<input type="text" name="crm" id="crm" required /> <br />
 		
 		<label for="nome">Nome: </label>
-		<input type="text" name="nome" id="nome" /> <br />
+		<input type="text" name="nome" id="nome" required /> <br />
 		
 		<label for="especialidade">Especialidade: </label>
-		<input type="text" name="especialidade" id="especialidade" /> <br />
+		<input type="text" name="especialidade" id="especialidade" required /> <br />
 		
 		<input type="submit" name="Adicionar" />
 	</form>

@@ -59,10 +59,18 @@ public class ControllerServlet extends HttpServlet {
 		}
 		
 		if(request.getMethod().equals("POST")) {
-			//System.out.println("POST " + stringDispatcher);
-			response.sendRedirect(stringDispatcher);
-		}
-		else {			
+			if(request.getAttribute("exception") == null) {
+				// se não houver nenhuma exceção, a requisição POST
+				// teve sucesso, e neste caso, devemos redirecinar a requisição
+				// com sendRedirect()
+				response.sendRedirect(stringDispatcher);
+			} else {
+				// Caso a requisição POST não tenha sucesso, devemos redirecionar
+				// com o dispatcher juntamente com a mensagem da exceção
+				request.setAttribute("mensagem", request.getAttribute("exception"));
+				request.getRequestDispatcher(stringDispatcher).forward(request, response);
+			}
+		} else {			
 			//System.out.println("GET " + stringDispatcher);			
 			request.getRequestDispatcher(stringDispatcher).forward(request, response);
 		}

@@ -1,2 +1,2 @@
-<h1>Clinica</h1>
+<h1><a href="/clinica">Clinica</a></h1>
 <hr />

@@ -12,16 +12,16 @@
 	<h2>Detalhes do Médico</h2>
 	
 	<form action="MedicoDispatcher">
-		<input type="hidden" name="idMedico" id="idMedico" value="${medico.idMedico}" />
+		<input type="hidden" name="idMedico" id="idMedico" value="${medico.idMedico}" required />
 		
 		<label for="crm">CRM: </label>
-		<input type="text" name="crm" id="crm" value="${medico.crm}" /> <br />
+		<input type="text" name="crm" id="crm" value="${medico.crm}" required /> <br />
 		
 		<label for="nome">Nome: </label>
-		<input type="text" name="nome" id="nome" value="${medico.nome}" /> <br />
+		<input type="text" name="nome" id="nome" value="${medico.nome}" required /> <br />
 		
 		<label for="especialidade">Especialidade: </label>
-		<input type="text" name="especialidade" id="especialidade" value="${medico.especialidade}" /> <br />
+		<input type="text" name="especialidade" id="especialidade" value="${medico.especialidade}" required /> <br />
 		
 		<input type="submit" name="_method" value="DELETE" />
 		<input type="submit" name="_method" value="PUT" />
@@ -31,6 +31,7 @@
 		</c:if>
 	</form>
 	
+	<p> <a href="MedicoDispatcher">Lista de Medicos</a> </p>
 	<c:import url="rodape.jsp" />
 </body>
 </html>

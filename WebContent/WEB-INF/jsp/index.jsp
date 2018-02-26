@@ -14,7 +14,7 @@
 	<a href="MedicoDispatcher">Medicos</a> <br />
 	<a href="PacienteDispatcher">Pacientes</a> <br />
 	<a href="ConvenioDispatcher">Convenios</a> <br />
-	<a href="#">Consultas</a> <br />
+	<a href="ConsultaDispatcher">Consultas</a> <br />
 	
 	<c:import url="rodape.jsp" />
 </body>

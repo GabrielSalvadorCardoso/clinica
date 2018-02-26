@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import br.com.clinica.modelo.Consulta;
 import br.com.clinica.modelo.Medico;
 import br.com.clinica.modelo.Paciente;
@@ -21,19 +22,15 @@ public class ConsultaDao implements Dao<Consulta> {
 	}
 	
 	@Override
-	public void adiciona(Consulta consulta) {
+	public void adiciona(Consulta consulta) throws MySQLIntegrityConstraintViolationException, SQLException {
 		String sql = "insert into consulta (id_paciente, id_medico, data, horario) values (?, ?, ?, ?)";
-		try {
-			PreparedStatement stmt = this.connection.prepareStatement(sql);
-			stmt.setLong(1, consulta.getPaciente().getIdPaciente());
-			stmt.setLong(2, consulta.getMedico().getIdMedico());
-			stmt.setDate(3, new Date(consulta.getData().getTimeInMillis()));
-			stmt.setTime(4, consulta.getHorario());
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		PreparedStatement stmt = this.connection.prepareStatement(sql);
+		stmt.setLong(1, consulta.getPaciente().getIdPaciente());
+		stmt.setLong(2, consulta.getMedico().getIdMedico());
+		stmt.setDate(3, new Date(consulta.getData().getTimeInMillis()));
+		stmt.setTime(4, consulta.getHorario());
+		stmt.execute();
+		stmt.close();
 	}
 
 	@Override

@@ -38,13 +38,13 @@
 	
 	<form action="#" method="POST">
 		<label for="codigo">Código</label>
-		<input type="text" name="codigo" id="codigo" /> <br />
+		<input type="text" name="codigo" id="codigo" required /> <br />
 		
 		<label for="nome">Nome</label>
-		<input type="text" name="nome" id="nome" /> <br />
+		<input type="text" name="nome" id="nome" required /> <br />
 		
 		<label for="concedente">Concedente</label>
-		<input type="text" name="concedente" id="concedente" /> <br />
+		<input type="text" name="concedente" id="concedente" required /> <br />
 		
 		<input type="submit" value="Enviar" />
 	</form>
