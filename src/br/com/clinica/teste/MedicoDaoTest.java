@@ -2,6 +2,7 @@ package br.com.clinica.teste;
 
 import static org.junit.Assert.*;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.FixMethodOrder;
@@ -10,6 +11,8 @@ import br.com.clinica.connection.ConnectionFactory;
 import br.com.clinica.dao.MedicoDao;
 import br.com.clinica.modelo.Medico;
 import org.junit.runners.MethodSorters;
+
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MedicoDaoTest {
@@ -30,7 +33,7 @@ public class MedicoDaoTest {
 	}
 
 	@Test
-	public void TestAAdicionaEListaMedico() {		
+	public void TestAAdicionaEListaMedico() throws MySQLIntegrityConstraintViolationException, SQLException {		
 		dao.adiciona(medicoTest);
 		List<Medico> listaMedicos = dao.lista();		
 		
@@ -72,7 +75,7 @@ public class MedicoDaoTest {
 	}
 	
 	@Test
-	public void TestCAlteraEPesquisaMedico() {
+	public void TestCAlteraEPesquisaMedico() throws MySQLIntegrityConstraintViolationException, SQLException {
 		// recupera medicoTest no banco para continuar o teste
 		Medico medicoDb = dao.pesquisa(medicoTest.getIdMedico());
 		
@@ -88,7 +91,7 @@ public class MedicoDaoTest {
 	}
 	
 	@Test
-	public void TestDRemoveMedico() {
+	public void TestDRemoveMedico() throws MySQLIntegrityConstraintViolationException, SQLException {
 		Medico medicoDb = dao.pesquisa(medicoTest.getIdMedico());
 		dao.remove(medicoDb);
 		

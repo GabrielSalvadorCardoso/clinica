@@ -3,12 +3,16 @@ package br.com.clinica.teste;
 import static org.junit.Assert.*;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.List;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+
 import br.com.clinica.connection.ConnectionFactory;
 import br.com.clinica.dao.ConvenioDao;
 import br.com.clinica.dao.PacienteDao;
@@ -60,7 +64,7 @@ public class PacienteDaoTest {
 	}
 
 	@Test
-	public void TestAAdicionaEListaPaciente() {
+	public void TestAAdicionaEListaPaciente() throws MySQLIntegrityConstraintViolationException, SQLException {
 		dao.adiciona(pacienteTest1);
 		
 		List<Paciente> pacientes = dao.lista();
@@ -94,7 +98,7 @@ public class PacienteDaoTest {
 	}
 	
 	@Test
-	public void TestCAlteraEPesquisaPaciente() {
+	public void TestCAlteraEPesquisaPaciente() throws MySQLIntegrityConstraintViolationException, SQLException {
 		Paciente pacienteDb = dao.pesquisa(pacienteTest1.getIdPaciente());
 		pacienteDb.setNome("Paciente Teste 1 (alterado)");
 		
@@ -113,7 +117,7 @@ public class PacienteDaoTest {
 	}
 	
 	@Test
-	public void TestDRemovePaciente() {
+	public void TestDRemovePaciente() throws MySQLIntegrityConstraintViolationException, SQLException {
 		dao.remove(pacienteTest1);
 		
 		List<Paciente> pacientes = dao.lista();
@@ -129,7 +133,7 @@ public class PacienteDaoTest {
 	// teste de paciente com convenio (pacienteTest2)
 	// antes de adicionar o paciente com convenio precisamos adicionar o convenio
 	@Test
-	public void TestEAdicionaEListaConvenio() { 
+	public void TestEAdicionaEListaConvenio() throws MySQLIntegrityConstraintViolationException, SQLException { 
 		convenioDao.adiciona(convenioTest);
 		
 		Convenio convenioSelecionado = null;
@@ -145,7 +149,7 @@ public class PacienteDaoTest {
 	}
 	
 	@Test
-	public void TestFAdicionaEListaPacienteComConvenio() {		
+	public void TestFAdicionaEListaPacienteComConvenio() throws MySQLIntegrityConstraintViolationException, SQLException {		
 		dao.adiciona(pacienteTest2);
 		
 		Paciente pacienteSelecionado = null;
@@ -167,7 +171,7 @@ public class PacienteDaoTest {
 	}
 	
 	@Test
-	public void TestGRemovePacienteComConvenio() {
+	public void TestGRemovePacienteComConvenio() throws MySQLIntegrityConstraintViolationException, SQLException {
 		dao.remove(pacienteTest2);
 		
 		boolean pacienteDeletado = true;
@@ -179,7 +183,7 @@ public class PacienteDaoTest {
 	}
 	
 	@Test
-	public void TestHRemoveConvenio() {
+	public void TestHRemoveConvenio() throws SQLException {
 		convenioDao.remove(convenioTest);
 		
 		boolean convenioRemovido = true;

@@ -4,15 +4,13 @@ import static org.junit.Assert.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.util.Calendar;
 import java.util.List;
-
-import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import br.com.clinica.connection.ConnectionFactory;
 import br.com.clinica.dao.ConsultaDao;
@@ -111,7 +109,7 @@ public class ConsultaDaoTest {
 	}
 
 	@Test
-	public void TestAAdicionaEListaPacienteTest1() {
+	public void TestAAdicionaEListaPacienteTest1() throws MySQLIntegrityConstraintViolationException, SQLException {
 		pacienteDao.adiciona(pacienteTest1);
 		
 		List<Paciente> pacientes = pacienteDao.lista();
@@ -133,7 +131,7 @@ public class ConsultaDaoTest {
 	}
 	
 	@Test
-	public void TestBAdicionaEListaPacienteTest2() {
+	public void TestBAdicionaEListaPacienteTest2() throws MySQLIntegrityConstraintViolationException, SQLException {
 		pacienteDao.adiciona(pacienteTest2);
 		
 		List<Paciente> pacientes = pacienteDao.lista();
@@ -155,7 +153,7 @@ public class ConsultaDaoTest {
 	}
 	
 	@Test
-	public void TestCAdicionaEListaMedicoTest1() {
+	public void TestCAdicionaEListaMedicoTest1() throws MySQLIntegrityConstraintViolationException, SQLException {
 		medicoDao.adiciona(medicoTest1);
 		
 		List<Medico> medicos = medicoDao.lista();
@@ -172,7 +170,7 @@ public class ConsultaDaoTest {
 	}
 	
 	@Test
-	public void TestDAdicionaEListaMedicoTest2() {
+	public void TestDAdicionaEListaMedicoTest2() throws MySQLIntegrityConstraintViolationException, SQLException {
 		medicoDao.adiciona(medicoTest2);
 		
 		List<Medico> medicos = medicoDao.lista();
@@ -189,7 +187,7 @@ public class ConsultaDaoTest {
 	}
 	
 	@Test
-	public void TestEAdicionaEListaConsultaTest1() {		
+	public void TestEAdicionaEListaConsultaTest1() throws MySQLIntegrityConstraintViolationException, SQLException {		
 		consultaDao.adiciona(consultaTest1);
 		
 		List<Consulta> consultas = consultaDao.lista();
@@ -230,13 +228,13 @@ public class ConsultaDaoTest {
 		assertEquals(consultaDbHorario, consultaTestHorario);
 	}
 		
-	@Test(expected=RuntimeException.class)
-	public void TestGAdicionaconsultaTest2ComSQLException() {
+	@Test(expected=MySQLIntegrityConstraintViolationException.class)
+	public void TestGAdicionaconsultaTest2ComSQLException() throws MySQLIntegrityConstraintViolationException, SQLException {
 		consultaDao.adiciona(consultaTest2);
 	}
 	
-	@Test(expected=RuntimeException.class)
-	public void TestHAdicionaconsultaTest3ComSQLException() {
+	@Test(expected=MySQLIntegrityConstraintViolationException.class)
+	public void TestHAdicionaconsultaTest3ComSQLException() throws MySQLIntegrityConstraintViolationException, SQLException {
 		consultaDao.adiciona(consultaTest3);
 	}
 	
@@ -255,7 +253,13 @@ public class ConsultaDaoTest {
 		//System.out.println(ConversorData.calendarToString(consultaTest1.getData(), "yyyy/MM/dd"));
 		//System.out.println("----------------------");
 		
-		consultaDao.altera(consultaDb);
+		try {
+			consultaDao.altera(consultaDb);
+		} catch (MySQLIntegrityConstraintViolationException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 		List<Consulta> consultas = consultaDao.lista();
 		Consulta consultaSelec = null;
@@ -296,7 +300,7 @@ public class ConsultaDaoTest {
 
 	// remoção de pacientes e medicos de teste
 	@Test
-	public void TestWRemovePacienteTest1() {
+	public void TestWRemovePacienteTest1() throws MySQLIntegrityConstraintViolationException, SQLException {
 		pacienteDao.remove(pacienteTest1);
 		
 		List<Paciente> pacientes = pacienteDao.lista();
@@ -309,7 +313,7 @@ public class ConsultaDaoTest {
 	}
 	
 	@Test
-	public void TestXRemovePacienteTest2() {
+	public void TestXRemovePacienteTest2() throws MySQLIntegrityConstraintViolationException, SQLException {
 		pacienteDao.remove(pacienteTest2);
 		
 		List<Paciente> pacientes = pacienteDao.lista();
@@ -323,7 +327,13 @@ public class ConsultaDaoTest {
 	
 	@Test
 	public void TestYRemoveMedicoTest1() {
-		medicoDao.remove(medicoTest1);
+		try {
+			medicoDao.remove(medicoTest1);
+		} catch (MySQLIntegrityConstraintViolationException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 		List<Medico> medicos = medicoDao.lista();
 		boolean medicoRemovido = true;
@@ -336,7 +346,13 @@ public class ConsultaDaoTest {
 	
 	@Test
 	public void TestZRemoveMedicoTest2() {
-		medicoDao.remove(medicoTest2);
+		try {
+			medicoDao.remove(medicoTest2);
+		} catch (MySQLIntegrityConstraintViolationException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 		List<Medico> medicos = medicoDao.lista();
 		boolean medicoRemovido = true;

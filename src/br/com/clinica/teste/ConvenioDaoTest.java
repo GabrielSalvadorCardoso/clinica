@@ -3,11 +3,14 @@ package br.com.clinica.teste;
 import static org.junit.Assert.*;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import br.com.clinica.connection.ConnectionFactory;
 import br.com.clinica.dao.ConvenioDao;
@@ -33,7 +36,7 @@ public class ConvenioDaoTest {
 	}
 	
 	@Test
-	public void TestAAdicionaEListaConvenio() {
+	public void TestAAdicionaEListaConvenio() throws MySQLIntegrityConstraintViolationException, SQLException {
 		dao.adiciona(convenioTest);
 		
 		List<Convenio> convenios = dao.lista();
@@ -60,7 +63,7 @@ public class ConvenioDaoTest {
 	}
 	
 	@Test
-	public void TestCAlteraEPesquisaConvenio() {
+	public void TestCAlteraEPesquisaConvenio() throws MySQLIntegrityConstraintViolationException, SQLException {
 		// recupera convenio do banco de dados
 		Convenio convenioDb = dao.pesquisa(convenioTest.getIdConvenio());
 		
@@ -79,7 +82,7 @@ public class ConvenioDaoTest {
 	}
 	
 	@Test
-	public void TestDRemoveConvenio() {
+	public void TestDRemoveConvenio() throws SQLException {
 		dao.remove(convenioTest);
 		
 		List<Convenio> convenios = dao.lista();

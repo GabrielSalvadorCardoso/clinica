@@ -72,6 +72,10 @@
 		<br />
 		
 		<input type="submit" name="Enviar" />
+		
+		<c:if test="${not empty mensagem}">
+			<p>${mensagem}</p>
+		</c:if>
 	</form>
 	
 	<c:import url="rodape.jsp" />

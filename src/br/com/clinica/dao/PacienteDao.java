@@ -8,6 +8,9 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+
 import br.com.clinica.modelo.Convenio;
 import br.com.clinica.modelo.Paciente;
 
@@ -20,70 +23,55 @@ public class PacienteDao implements Dao<Paciente> {
 	}
 	
 	@Override
-	public void adiciona(Paciente paciente) {
+	public void adiciona(Paciente paciente) throws MySQLIntegrityConstraintViolationException, SQLException {
 		String sql = "insert into paciente (cpf, nome, sexo, dataNascimento, id_convenio) values (?, ?, ?, ?, ?)";
-		
-		try {
-			PreparedStatement stmt = this.connection.prepareStatement(sql);
-			stmt.setString(1, paciente.getCpf());
-			stmt.setString(2, paciente.getNome());
-			stmt.setString(3, paciente.getSexo());
-			stmt.setDate(4, new Date(paciente.getDataNascimento().getTimeInMillis()));
-			
-			if(paciente.getConvenio() != null)
-				if(paciente.getConvenio().getIdConvenio() != 0)
-					stmt.setLong(5, paciente.getConvenio().getIdConvenio());
-				else
-					stmt.setString(5, null);
-			else
-				stmt.setString(5, null);
-			
-			stmt.execute();
-			stmt.close();			
-		} catch (SQLException e) {
-			//throw new RuntimeException(e);
-			e.printStackTrace();
-		}
-	}
 
-	@Override
-	public void altera(Paciente paciente) {
-		String sql = "update paciente set cpf = ?, nome = ?, sexo = ?, dataNascimento = ?, id_convenio = ? where id_paciente = ?";
+		PreparedStatement stmt = this.connection.prepareStatement(sql);
+		stmt.setString(1, paciente.getCpf());
+		stmt.setString(2, paciente.getNome());
+		stmt.setString(3, paciente.getSexo());
+		stmt.setDate(4, new Date(paciente.getDataNascimento().getTimeInMillis()));
 		
-		try {
-			PreparedStatement stmt = this.connection.prepareStatement(sql);
-			stmt.setString(1, paciente.getCpf());
-			stmt.setString(2, paciente.getNome());
-			stmt.setString(3, paciente.getSexo());
-			stmt.setDate(4, new Date(paciente.getDataNascimento().getTimeInMillis()));
-			
-			if(paciente.getConvenio() != null)
+		if(paciente.getConvenio() != null)
+			if(paciente.getConvenio().getIdConvenio() != 0)
 				stmt.setLong(5, paciente.getConvenio().getIdConvenio());
 			else
 				stmt.setString(5, null);
-			
-			stmt.setLong(6, paciente.getIdPaciente());
-			
-			stmt.execute();
-			stmt.close();
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}		
+		else
+			stmt.setString(5, null);
+		
+		stmt.execute();
+		stmt.close();
 	}
 
 	@Override
-	public void remove(Paciente paciente) {
-		String sql = "delete from paciente where id_paciente = ?";
+	public void altera(Paciente paciente) throws MySQLIntegrityConstraintViolationException, SQLException {
+		String sql = "update paciente set cpf = ?, nome = ?, sexo = ?, dataNascimento = ?, id_convenio = ? where id_paciente = ?";
+
+		PreparedStatement stmt = this.connection.prepareStatement(sql);
+		stmt.setString(1, paciente.getCpf());
+		stmt.setString(2, paciente.getNome());
+		stmt.setString(3, paciente.getSexo());
+		stmt.setDate(4, new Date(paciente.getDataNascimento().getTimeInMillis()));
 		
-		try {
-			PreparedStatement stmt = this.connection.prepareStatement(sql);
-			stmt.setLong(1, paciente.getIdPaciente());
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		if(paciente.getConvenio() != null)
+			stmt.setLong(5, paciente.getConvenio().getIdConvenio());
+		else
+			stmt.setString(5, null);
+		
+		stmt.setLong(6, paciente.getIdPaciente());
+		
+		stmt.execute();
+		stmt.close();
+	}
+
+	@Override
+	public void remove(Paciente paciente) throws MySQLIntegrityConstraintViolationException, SQLException {
+		String sql = "delete from paciente where id_paciente = ?";
+		PreparedStatement stmt = this.connection.prepareStatement(sql);
+		stmt.setLong(1, paciente.getIdPaciente());
+		stmt.execute();
+		stmt.close();
 		
 	}
 

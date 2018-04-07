@@ -99,26 +99,32 @@ public class ConsultaDispatcher implements Dispatcher {
 		
 		try {
 			this.consultaDao.adiciona(consulta);
-		} catch (MySQLIntegrityConstraintViolationException e) {
+		} catch (MySQLIntegrityConstraintViolationException exception) {
 			// Se ocorrer uma violação de uma constraint,
 			// uma mensagem de exceção sera anexada a requisição
-			request.setAttribute("exception", e.getMessage());
+			// AVISO: note que o código abaixo esta fortemente acoplado
+			// ao nome da unique key definida no banco de dados
+			String mensagemViolacao = "Violação de chave unica";
+			if(exception.getMessage().contains("un_tbmedico_consulta"))
+				mensagemViolacao = "O medico selecionado já está cadastrado em outra consulta para esta data e horario";			
+			if(exception.getMessage().contains("un_tbpaciente_consulta"))
+				mensagemViolacao = "O paciente selecionado já está cadastrado em outra consulta para esta data e horario";
+				
+			request.setAttribute("exception", mensagemViolacao);
 			return this.get(request, response);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}		
 		
 		return "ConsultaDispatcher";
-		
-		/* TRATAR A EXCEÇÃO ABAIXO
-		 * HTTP Status 500 - com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '3-2018-01-01-12:00:00' for key 'un_tbmedico_consulta'
-		 * */
 	}
 
 	@Override
 	public String put(HttpServletRequest request, HttpServletResponse response) {
 		Consulta consulta = new Consulta();
-		consulta.setIdConsulta(Long.parseLong(request.getParameter("idConsulta")));		
+		
+		long idConsulta = Long.parseLong(request.getParameter("idConsulta"));
+		consulta.setIdConsulta(idConsulta);		
 		
 		PacienteDao pacienteDao = new PacienteDao(this.connection);
 		Paciente paciente = pacienteDao.pesquisa( Long.parseLong(request.getParameter("idPaciente")) );
@@ -140,17 +146,27 @@ public class ConsultaDispatcher implements Dispatcher {
 		java.sql.Time timeHorario = ConversorData.stringToTime(stringHorario , "HH:mm:ss");
 		consulta.setHorario(timeHorario);
 		
-		this.consultaDao.altera(consulta);
+		// Uma alteração no recurso Consulta pode resultar em uma exceção
+		try {
+			this.consultaDao.altera(consulta);
+		} catch (MySQLIntegrityConstraintViolationException exception) {
+			String mensagemViolacao = "Violação de chave unica";
+			if(exception.getMessage().contains("un_tbmedico_consulta"))
+				mensagemViolacao = "O medico selecionado já está cadastrado em outra consulta para esta data e horario";			
+			if(exception.getMessage().contains("un_tbpaciente_consulta"))
+				mensagemViolacao = "O paciente selecionado já está cadastrado em outra consulta para esta data e horario";
+				
+			request.setAttribute("exception", mensagemViolacao);
+			return this.get(request, response, idConsulta);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		
 		request.setAttribute("consulta", consulta);
 		request.setAttribute("mensagem", "Consulta alterada com sucesso");
 		request.setAttribute("medicos", medicoDao.lista());
 		request.setAttribute("pacientes", pacienteDao.lista());
 		return "WEB-INF/jsp/consulta-details.jsp";
-		
-		/* TRATAR EXCEÇÃO ABAIXO
-		 HTTP Status 500 - com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '1-2018-01-01-11:30:00' for key 'un_tbmedico_consulta'
-		 * */
 	}
 
 	@Override

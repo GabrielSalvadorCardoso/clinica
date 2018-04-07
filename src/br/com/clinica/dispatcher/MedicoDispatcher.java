@@ -1,10 +1,14 @@
 package br.com.clinica.dispatcher;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+
 import br.com.clinica.dao.MedicoDao;
 import br.com.clinica.modelo.Medico;
 
@@ -17,12 +21,12 @@ public class MedicoDispatcher implements Dispatcher {
 		this.connection = (Connection) request.getAttribute("connection");
 		this.dao = new MedicoDao(this.connection);
 		
-		String requestUri = request.getRequestURI();
 		String requestMethod = request.getMethod();
 		String requestMethodAlt = request.getParameter("_method");
 		String idMedico = request.getParameter("idMedico");
-				
-		List<String> uriPieces = splitURI(requestUri);
+
+		// String requestUri = request.getRequestURI();
+		// List<String> uriPieces = splitURI(requestUri);
 		// uriPieces[0] = clinica
 		// uriPieces[1] = MedicoDispatcher
 		// uriPieces[2] = idMedico (pode ter ou não)
@@ -69,7 +73,18 @@ public class MedicoDispatcher implements Dispatcher {
 		medico.setNome(request.getParameter("nome"));
 		medico.setEspecialidade(request.getParameter("especialidade"));
 		
-		this.dao.adiciona(medico);		
+		try {
+			this.dao.adiciona(medico);
+		} catch (MySQLIntegrityConstraintViolationException exception) {
+			String mensagemViolacao = "Violação de chave unica";
+			if(exception.getMessage().contains("un_crm_medico"))
+				mensagemViolacao = "Já existe um medico cadastrado com este CRM";
+			
+			request.setAttribute("exception", mensagemViolacao);
+			return this.get(request, response);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}		
 		
 		return "MedicoDispatcher";
 	}
@@ -82,7 +97,18 @@ public class MedicoDispatcher implements Dispatcher {
 		medico.setNome(request.getParameter("nome"));
 		medico.setEspecialidade(request.getParameter("especialidade"));
 		
-		this.dao.altera(medico);
+		try {
+			this.dao.altera(medico);
+		} catch (MySQLIntegrityConstraintViolationException exception) {
+			String mensagemViolacao = "Violação de chave unica";
+			if(exception.getMessage().contains("un_crm_medico"))
+				mensagemViolacao = "Já existe um medico cadastrado com este CRM";
+			
+			request.setAttribute("exception", mensagemViolacao);
+			return this.get(request, response, medico.getIdMedico());
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		
 		request.setAttribute("medico", medico);
 		request.setAttribute("mensagem", "Medico alterado com sucesso!");
@@ -98,17 +124,19 @@ public class MedicoDispatcher implements Dispatcher {
 		medico.setNome(request.getParameter("nome"));
 		medico.setEspecialidade(request.getParameter("especialidade"));
 		
-		this.dao.remove(medico);
+		try {
+			this.dao.remove(medico);
+		} catch (MySQLIntegrityConstraintViolationException exception) {
+			String mensagemViolacao = "Violação de chave estrangeira";
+			if(exception.getMessage().contains("fk_consulta_medico"))
+				mensagemViolacao = "O medico esta registrado em uma consulta e não pode ser removido";			
+				
+			request.setAttribute("exception", mensagemViolacao);
+			return this.get(request, response, medico.getIdMedico());
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		
 		return this.get(request, response);
-	}
-	
-	private List<String> splitURI(String requestUri) {
-		List<String> uriPieces = new ArrayList<String>();
-		for(String piece : requestUri.split("/")) {
-			if(!piece.equals(""))
-				uriPieces.add(piece);				
-		}
-		return uriPieces;
 	}
 }

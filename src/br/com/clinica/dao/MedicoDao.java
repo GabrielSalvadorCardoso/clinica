@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+
 import br.com.clinica.modelo.Medico;
 
 public class MedicoDao implements Dao<Medico> {
@@ -17,49 +19,35 @@ public class MedicoDao implements Dao<Medico> {
 	}
 
 	@Override
-	public void adiciona(Medico medico) {
+	public void adiciona(Medico medico) throws MySQLIntegrityConstraintViolationException, SQLException {
 		String sql = "insert into medico (crm, nome, especialidade) values (?, ?, ?)";
-		try {
-			PreparedStatement stmt = this.connection.prepareStatement(sql);
-			stmt.setString(1, medico.getCrm());
-			stmt.setString(2, medico.getNome());
-			stmt.setString(3, medico.getEspecialidade());
-			stmt.execute();
-			stmt.close();			
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		PreparedStatement stmt = this.connection.prepareStatement(sql);
+		stmt.setString(1, medico.getCrm());
+		stmt.setString(2, medico.getNome());
+		stmt.setString(3, medico.getEspecialidade());
+		stmt.execute();
+		stmt.close();
 	}
 
 	@Override
-	public void altera(Medico medico) {
+	public void altera(Medico medico) throws MySQLIntegrityConstraintViolationException, SQLException {
 		String sql = "update medico set crm = ?, nome = ?, especialidade = ? where id_medico = ?";
-		try {
-			PreparedStatement stmt = this.connection.prepareStatement(sql);
-			stmt.setString(1, medico.getCrm());
-			stmt.setString(2, medico.getNome());
-			stmt.setString(3, medico.getEspecialidade());
-			stmt.setLong(4, medico.getIdMedico());
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-		
+		PreparedStatement stmt = this.connection.prepareStatement(sql);
+		stmt.setString(1, medico.getCrm());
+		stmt.setString(2, medico.getNome());
+		stmt.setString(3, medico.getEspecialidade());
+		stmt.setLong(4, medico.getIdMedico());
+		stmt.execute();
+		stmt.close();		
 	}
-
+	
 	@Override
-	public void remove(Medico medico) {
+	public void remove(Medico medico) throws MySQLIntegrityConstraintViolationException, SQLException {
 		String sql = "delete from medico where id_medico = ?";
-		
-		try {
-			PreparedStatement stmt = this.connection.prepareStatement(sql);
-			stmt.setLong(1, medico.getIdMedico());
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		PreparedStatement stmt = this.connection.prepareStatement(sql);
+		stmt.setLong(1, medico.getIdMedico());
+		stmt.execute();
+		stmt.close();
 	}
 
 	@Override

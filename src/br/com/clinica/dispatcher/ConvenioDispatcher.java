@@ -1,10 +1,13 @@
 package br.com.clinica.dispatcher;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import br.com.clinica.dao.ConvenioDao;
 import br.com.clinica.modelo.Convenio;
@@ -60,8 +63,20 @@ public class ConvenioDispatcher implements Dispatcher{
 		convenio.setCodigo(request.getParameter("codigo"));
 		convenio.setNome(request.getParameter("nome"));
 		convenio.setConcedente(request.getParameter("concedente"));
+
+		try {
+			this.dao.adiciona(convenio);
+		} catch (MySQLIntegrityConstraintViolationException exception) {
+			String mensagemViolacao = "";
+			if(exception.getMessage().contains("un_codigo_convenio"))
+				mensagemViolacao = "Já existe um convênio cadastrado com este codigo";
+				
+			request.setAttribute("exception", mensagemViolacao);
+			return this.get(request, response);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		
-		this.dao.adiciona(convenio);
 		return "ConvenioDispatcher";
 	}
 
@@ -73,7 +88,18 @@ public class ConvenioDispatcher implements Dispatcher{
 		convenio.setNome(request.getParameter("nome"));
 		convenio.setConcedente(request.getParameter("concedente"));
 		
-		this.dao.altera(convenio);
+		try {
+			this.dao.altera(convenio);
+		} catch (MySQLIntegrityConstraintViolationException exception) {
+			String mensagemViolacao = "";
+			if(exception.getMessage().contains("un_codigo_convenio"))
+				mensagemViolacao = "Já existe um convênio cadastrado com este codigo";
+				
+			request.setAttribute("exception", mensagemViolacao);
+			return this.get(request, response, convenio.getIdConvenio());
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		
 		request.setAttribute("convenio", convenio);
 		request.setAttribute("mensagem", "Convênio alterado com sucesso!");
@@ -84,12 +110,24 @@ public class ConvenioDispatcher implements Dispatcher{
 	@Override
 	public String delete(HttpServletRequest request, HttpServletResponse response) {
 		Convenio convenio = new Convenio();
-		convenio.setIdConvenio(Long.parseLong(request.getParameter("idConvenio")));
+		long idConvenio = Long.parseLong(request.getParameter("idConvenio"));
+		convenio.setIdConvenio(idConvenio);
 		convenio.setCodigo(request.getParameter("codigo"));
 		convenio.setNome(request.getParameter("nome"));
 		convenio.setConcedente(request.getParameter("concedente"));
 		
-		this.dao.remove(convenio);
+		try {
+			this.dao.remove(convenio);
+		} catch(MySQLIntegrityConstraintViolationException exception) {
+			String mensagemViolacao = "Violação de chave estrangeira";
+			if(exception.getMessage().contains("fk_paciente_convenio"))
+				mensagemViolacao = "Convenio esta associado a algum(ns) paciente(s), por isso não pode ser removido";
+			
+			request.setAttribute("exception",mensagemViolacao);
+			return this.get(request, response, idConvenio);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		
 		// redireciona para a lista de convenios
 		return this.get(request, response);

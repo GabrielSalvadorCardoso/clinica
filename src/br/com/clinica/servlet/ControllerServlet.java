@@ -58,21 +58,23 @@ public class ControllerServlet extends HttpServlet {
 			throw new RuntimeException(instatiation);
 		}
 		
-		if(request.getMethod().equals("POST")) {
-			if(request.getAttribute("exception") == null) {
+		// idenpedentemente do metodo utilizado, se houver uma exceção, esta será associada a requisição
+		if(request.getAttribute("exception") != null)
+			request.setAttribute("mensagem", request.getAttribute("exception"));
+		
+		if(request.getMethod().equals("POST"))
+			if(request.getAttribute("exception") == null)
+				response.sendRedirect(stringDispatcher);
 				// se não houver nenhuma exceção, a requisição POST
 				// teve sucesso, e neste caso, devemos redirecinar a requisição
 				// com sendRedirect()
-				response.sendRedirect(stringDispatcher);
-			} else {
+			else
+				request.getRequestDispatcher(stringDispatcher).forward(request, response);
 				// Caso a requisição POST não tenha sucesso, devemos redirecionar
 				// com o dispatcher juntamente com a mensagem da exceção
-				request.setAttribute("mensagem", request.getAttribute("exception"));
-				request.getRequestDispatcher(stringDispatcher).forward(request, response);
-			}
-		} else {			
-			//System.out.println("GET " + stringDispatcher);			
+				// O atributo "exception" da requisição é configurado assim que ocorre uma exceção
+				// em algum dos dispatchers dos objetos				
+		else	
 			request.getRequestDispatcher(stringDispatcher).forward(request, response);
-		}
 	}
 }

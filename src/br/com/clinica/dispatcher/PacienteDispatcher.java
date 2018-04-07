@@ -1,11 +1,14 @@
 package br.com.clinica.dispatcher;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import br.com.clinica.dao.ConvenioDao;
 import br.com.clinica.dao.PacienteDao;
@@ -90,7 +93,18 @@ public class PacienteDispatcher implements Dispatcher {
 		
 		paciente.setConvenio(convenio);
 		
-		this.dao.adiciona(paciente);
+		try {
+			this.dao.adiciona(paciente);
+		} catch (MySQLIntegrityConstraintViolationException exception) {
+			String mensagemViolacao = "Violação de chave unica";
+			if(exception.getMessage().contains("un_cpf_paciente"))
+				mensagemViolacao = "Já existe um paciente cadastrado com este CPF";
+			
+			request.setAttribute("exception", mensagemViolacao);
+			return this.get(request, response);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		
 		return "PacienteDispatcher";
 	}
@@ -115,7 +129,18 @@ public class PacienteDispatcher implements Dispatcher {
 			paciente.setConvenio(convenio);
 		}
 		
-		this.dao.altera(paciente);		
+		try {
+			this.dao.altera(paciente);
+		} catch (MySQLIntegrityConstraintViolationException exception) {
+			String mensagemViolacao = "Violação de chave unica";
+			if(exception.getMessage().contains("un_cpf_paciente"))
+				mensagemViolacao = "Já existe um paciente cadastrado com este CPF";
+			
+			request.setAttribute("exception", mensagemViolacao);
+			return this.get(request, response, paciente.getIdPaciente());
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}	
 		
 		request.setAttribute("paciente", paciente);
 		// Toda view que contenha criação ou alteração de paciente deve conter uma lista de convenios a sua disposição
@@ -131,8 +156,20 @@ public class PacienteDispatcher implements Dispatcher {
 		// pois o método remove() de PacienteDao necessita apenas do ID do paciente 
 		// para realizar a operação de remoção do registro no banco de dados
 		Paciente paciente = new Paciente();
-		paciente.setIdPaciente(Long.parseLong(request.getParameter("idPaciente")));
-		this.dao.remove(paciente);
+		long idPaciente = Long.parseLong(request.getParameter("idPaciente"));
+		paciente.setIdPaciente(idPaciente);
+		try {
+			this.dao.remove(paciente);
+		} catch (MySQLIntegrityConstraintViolationException exception){
+			String mensagemViolacao = "";
+			if(exception.getMessage().contains("fk_consulta_paciente"))
+				mensagemViolacao = "O paciente esta relacionado a alguma(as) consulta(s), portanto não pode ser removido";
+			
+			request.setAttribute("exception", mensagemViolacao);			
+			return this.get(request, response, idPaciente);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		return this.get(request, response);
 	}
 

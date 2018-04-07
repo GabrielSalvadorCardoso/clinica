@@ -48,6 +48,10 @@
 		<input type="text" name="especialidade" id="especialidade" required /> <br />
 		
 		<input type="submit" name="Adicionar" />
+		
+		<c:if test="${not empty mensagem}">
+			<p>${mensagem}</p>
+		</c:if>
 	</form>
 	
 	<c:import url="rodape.jsp" />

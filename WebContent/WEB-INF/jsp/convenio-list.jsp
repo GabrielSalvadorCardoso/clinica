@@ -47,6 +47,10 @@
 		<input type="text" name="concedente" id="concedente" required /> <br />
 		
 		<input type="submit" value="Enviar" />
+		
+		<c:if test="${not empty mensagem}">
+			<p>${mensagem}</p>
+		</c:if>
 	</form>
 	
 	<c:import url="rodape.jsp" />

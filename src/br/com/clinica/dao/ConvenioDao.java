@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+
 import br.com.clinica.modelo.Convenio;
 
 public class ConvenioDao implements Dao<Convenio> {
@@ -17,47 +19,35 @@ public class ConvenioDao implements Dao<Convenio> {
 	}
 
 	@Override
-	public void adiciona(Convenio convenio) {
+	public void adiciona(Convenio convenio) throws MySQLIntegrityConstraintViolationException, SQLException {
 		String sql = "insert into convenio (codigo, nome, concedente) values (?, ?, ?)";
-		try {
-			PreparedStatement stmt = this.connection.prepareStatement(sql);
-			stmt.setString(1, convenio.getCodigo());
-			stmt.setString(2, convenio.getNome());
-			stmt.setString(3, convenio.getConcedente());
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}		
+		PreparedStatement stmt = this.connection.prepareStatement(sql);
+		stmt.setString(1, convenio.getCodigo());
+		stmt.setString(2, convenio.getNome());
+		stmt.setString(3, convenio.getConcedente());
+		stmt.execute();
+		stmt.close();	
 	}
 
 	@Override
-	public void altera(Convenio convenio) {
+	public void altera(Convenio convenio) throws MySQLIntegrityConstraintViolationException, SQLException {
 		String sql = "update convenio set codigo = ?, nome = ?, concedente = ? where id_convenio = ?";
-		try {
-			PreparedStatement stmt = this.connection.prepareStatement(sql);
-			stmt.setString(1, convenio.getCodigo());
-			stmt.setString(2, convenio.getNome());
-			stmt.setString(3, convenio.getConcedente());
-			stmt.setLong(4, convenio.getIdConvenio());
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}	
+		PreparedStatement stmt = this.connection.prepareStatement(sql);
+		stmt.setString(1, convenio.getCodigo());
+		stmt.setString(2, convenio.getNome());
+		stmt.setString(3, convenio.getConcedente());
+		stmt.setLong(4, convenio.getIdConvenio());
+		stmt.execute();
+		stmt.close();
 	}
 
 	@Override
-	public void remove(Convenio convenio) {
+	public void remove(Convenio convenio) throws SQLException {
 		String sql = "delete from convenio where id_convenio = ?";
-		try {
-			PreparedStatement stmt = this.connection.prepareStatement(sql);
-			stmt.setLong(1, convenio.getIdConvenio());
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}	
+		PreparedStatement stmt = this.connection.prepareStatement(sql);
+		stmt.setLong(1, convenio.getIdConvenio());
+		stmt.execute();
+		stmt.close();
 	}
 
 	@Override

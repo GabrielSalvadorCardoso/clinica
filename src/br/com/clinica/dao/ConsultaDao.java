@@ -34,20 +34,16 @@ public class ConsultaDao implements Dao<Consulta> {
 	}
 
 	@Override
-	public void altera(Consulta consulta) {
+	public void altera(Consulta consulta) throws MySQLIntegrityConstraintViolationException, SQLException {
 		String sql = "update consulta set id_paciente = ?, id_medico = ?, data = ?,  horario = ? where id_consulta = ?";
-		try {
-			PreparedStatement stmt = this.connection.prepareStatement(sql);
-			stmt.setLong(1, consulta.getPaciente().getIdPaciente());
-			stmt.setLong(2, consulta.getMedico().getIdMedico());
-			stmt.setDate(3, new Date(consulta.getData().getTimeInMillis()));
-			stmt.setTime(4, consulta.getHorario());
-			stmt.setLong(5, consulta.getIdConsulta());
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		PreparedStatement stmt = this.connection.prepareStatement(sql);
+		stmt.setLong(1, consulta.getPaciente().getIdPaciente());
+		stmt.setLong(2, consulta.getMedico().getIdMedico());
+		stmt.setDate(3, new Date(consulta.getData().getTimeInMillis()));
+		stmt.setTime(4, consulta.getHorario());
+		stmt.setLong(5, consulta.getIdConsulta());
+		stmt.execute();
+		stmt.close();
 	}
 
 	@Override
